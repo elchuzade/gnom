@@ -1,7 +1,7 @@
 GOLD_AMOUNT = 10
 CELL_SIZE = 40
-CELL_AMOUNT_X = 15
 CELL_AMOUNT_Y = 7
+CELL_AMOUNT_X = 15
 
 GRID_LINE_COLOR = (200, 200, 200)
 GRID_LINE_WIDTH = 2
@@ -9,11 +9,25 @@ GRID_LINE_WIDTH = 2
 GOLD_COLOR = (255, 215, 0)
 GOLD_RADIUS = 10
 
-GNOM_X = 0
+EXIT_Y = CELL_AMOUNT_Y // 2
+EXIT_X = CELL_AMOUNT_X - 1
+
 GNOM_Y = 0
+GNOM_X = 0
 GNOM_RADIUS = 14
 GNOM_COLOR = (200, 50, 100)
 GNOM_VISION_SIZE = 2
+
+USED_COORDS = [
+        {
+            "x": GNOM_X,
+            "y": GNOM_Y
+        },
+        {
+            "x": EXIT_X,
+            "y": EXIT_Y
+        }
+    ]
 
 FPS = 30
 MARGIN = 20

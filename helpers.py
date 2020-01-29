@@ -1,6 +1,6 @@
 import random
 import constants
-
+import core
 
 def make_empty_state(x_size, y_size):
     state = []
@@ -17,12 +17,31 @@ def add_gnom(empty_state, gnom):
     return empty_state
 
 
-def generate_random_gold_coords(x_cells, y_cells, x_reserved, y_reserved):
+def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=constants.CELL_AMOUNT_Y):
+    # Add Gnom coordinates and Exit coordinates to the used x and y to not make coin on top of them
+    used_coords = constants.USED_COORDS
+    all_gold = []
+    for i in range(gold_amount):
+        gold_x_coord, gold_y_coord = generate_random_gold_coords(x_cells, y_cells, used_coords)
+        gold = core.Gold(gold_x_coord, gold_y_coord)
+        used_coords.append({
+            "x": gold_x_coord,
+            "y": gold_y_coord
+        })
+        all_gold.append(gold)
+
+    return all_gold
+
+
+def generate_random_gold_coords(x_cells, y_cells, used_coords):
     x_coord = random.randrange(x_cells)
     y_coord = random.randrange(y_cells)
-    while x_coord in x_reserved and y_coord in y_reserved:
-        x_coord = random.randrange(x_cells)
-        y_coord = random.randrange(y_cells)
+
+    for cell in used_coords:
+        if cell["x"] == x_coord and cell["y"] == y_coord:
+            # Overlapping with existing object
+            x_coord, y_coord = generate_random_gold_coords(x_cells, y_cells, used_coords)
+            return x_coord, y_coord
 
     return x_coord, y_coord
 
@@ -38,8 +57,10 @@ def make_state(gnom, gold):
     empty_state = make_empty_state(constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
     # Adding gnom position on the map
     state_add_gnom = add_gnom(empty_state, gnom)
+    # Add exit gate to the map
+    state_add_exit = add_exit(state_add_gnom)
     # Adding all the coins of gold to the map
-    state_add_gold = add_gold(state_add_gnom, gold)
+    state_add_gold = add_gold(state_add_exit, gold)
     # Adding margin to the map based on the gnom's vision size
     margin_add_state = add_state_margin(state_add_gold, gnom.vision_size)
     return margin_add_state
@@ -100,7 +121,10 @@ def make_gnom_vision(state, vision_size, x, y):
     return vision
 
 
-
+def add_exit(state):
+    # Place the exit gate to the right side in the middle
+    state[len(state)//2][-1] = 9
+    return state
 
 
 
