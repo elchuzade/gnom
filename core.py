@@ -16,8 +16,15 @@ class Gnom:
         self.vision_size = constants.GNOM_VISION_SIZE
 
     def move(self, direction):
-        # Move the gnom in the given direction if not next ot the wall
-        print(direction)
+        # Move the gnom in the given direction
+        if direction == 0:
+            self.x -= 1
+        elif direction == 1:
+            self.y -= 1
+        elif direction == 2:
+            self.x += 1
+        elif direction == 3:
+            self.y += 1
 
 
 def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=constants.CELL_AMOUNT_Y):
@@ -53,3 +60,27 @@ class Game:
     def get_state(self):
         return self.state
 
+    def step(self, direction):
+        # Move gnom in the given direction if not next ot the wall
+        if direction == 0:
+            # Check if there is a wall on the left by finding the center of the gnom's vision
+            if self.gnom_vision[self.gnom.vision_size // 2][self.gnom.vision_size // 2 - 1] != -1:
+                self.gnom.move(0)
+
+        elif direction == 1:
+            # Check if there is a wall on the left by finding the center of the gnom's vision
+            if self.gnom_vision[self.gnom.vision_size // 2 - 1][self.gnom.vision_size // 2] != -1:
+                self.gnom.move(0)
+
+        elif direction == 2:
+            # Check if there is a wall on the left by finding the center of the gnom's vision
+            if self.gnom_vision[self.gnom.vision_size // 2][self.gnom.vision_size // 2 + 1] != -1:
+                self.gnom.move(0)
+
+        elif direction == 3:
+            # Check if there is a wall on the left by finding the center of the gnom's vision
+            if self.gnom_vision[self.gnom.vision_size // 2 + 1][self.gnom.vision_size // 2] != -1:
+                self.gnom.move(0)
+
+        self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
+        return self.gnom_vision
