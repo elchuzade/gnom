@@ -40,6 +40,9 @@ class Game:
         self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
 
     def get_gold(self):
+        return self.collected_gold
+
+    def get_map_gold(self):
         return self.gold
 
     def get_gnom(self):
@@ -141,8 +144,17 @@ class Game:
 
             helpers.draw_game(screen, self.gnom, self.gnom_vision)
 
-            text, text_rect = helpers.update_gold_text(font, self.collected_gold)
-            screen.blit(text, text_rect)
+            gold_text_placeholder, gold_rect_text_placeholder = helpers.update_gold_text_placeholder(font)
+            screen.blit(gold_text_placeholder, gold_rect_text_placeholder)
+
+            exit_text_placeholder, exit_rect_text_placeholder = helpers.update_exit_text_placeholder(font)
+            screen.blit(exit_text_placeholder, exit_rect_text_placeholder)
+
+            gold_text, gold_text_rect = helpers.update_gold_text(font, self.get_gold())
+            screen.blit(gold_text, gold_text_rect)
+
+            exit_text, exit_text_rect = helpers.update_exit_text(font, self.get_exit())
+            screen.blit(exit_text, exit_text_rect)
 
             # update display
             pygame.display.flip()

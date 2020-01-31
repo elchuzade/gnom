@@ -1,8 +1,9 @@
 """Constant values for the game of Gnom"""
 
 FONT_NAME = 'freesansbold.ttf'
-FONT_SIZE = 32
+FONT_SIZE = 40
 TEXT_COLOR = (240, 200, 250)
+TEXT_WIDTH = 100
 
 GOLD_AMOUNT = 10
 CELL_SIZE = 20

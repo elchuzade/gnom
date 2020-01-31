@@ -140,10 +140,37 @@ def check_coin_collect(gnom, gold):
     return False
 
 
+def update_gold_text_placeholder(font):
+    text = font.render("GOLD: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH * 2,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_exit_text_placeholder(font):
+    text = font.render("EXIT: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
 def update_gold_text(font, collected_gold):
     text = font.render(str(collected_gold), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
     text_rect = text.get_rect()
-    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2,
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_exit_text(font, exit_distance):
+    text = font.render(str(exit_distance), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH * 2,
                         ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
 
     return text, text_rect
@@ -206,21 +233,22 @@ def draw_gold(screen, gnom, vision_size, row, col):
                         constants.MARGIN,
                         int((gnom.y + row - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
                         constants.MARGIN],
-                        int(constants.GOLD_RADIUS))
+                       int(constants.GOLD_RADIUS))
 
 
 def draw_vision_cell(screen, gnom, vision_size, row, col):
-    pygame.draw.rect(screen, constants.GNOM_VISION_COLOR, ((col + gnom.x - vision_size) * constants.CELL_SIZE + constants.MARGIN,
-                                                           (row + gnom.y - vision_size) * constants.CELL_SIZE + constants.MARGIN,
-                                                           constants.CELL_SIZE, constants.CELL_SIZE))
+    pygame.draw.rect(screen, constants.GNOM_VISION_COLOR,
+                     ((col + gnom.x - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                      (row + gnom.y - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                      constants.CELL_SIZE, constants.CELL_SIZE))
 
 
 def draw_vision(screen, gnom, vision):
     for row in range(len(vision)):
         for col in range(len(vision[row])):
-            draw_vision_cell(screen, gnom, len(vision[0])//2, row, col)
+            draw_vision_cell(screen, gnom, len(vision[0]) // 2, row, col)
             if vision[row][col] == 2:
-                draw_gold(screen, gnom, len(vision[0])//2, row, col)
+                draw_gold(screen, gnom, len(vision[0]) // 2, row, col)
 
 
 def draw_exit(screen):
