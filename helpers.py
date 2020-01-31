@@ -1,6 +1,8 @@
 import random
 import constants
 import core
+import pygame
+
 
 def make_empty_state(x_size, y_size):
     state = []
@@ -123,35 +125,114 @@ def make_gnom_vision(state, vision_size, x, y):
 
 def add_exit(state):
     # Place the exit gate to the right side in the middle
-    state[len(state)//2][-1] = 9
+    state[len(state) // 2][-1] = 9
     return state
 
 
+def find_exit_distance(gnom):
+    return (constants.EXIT_Y - gnom.y) + (constants.EXIT_X - gnom.x)
 
 
+def check_coin_collect(gnom, gold):
+    for coin in gold:
+        if coin.x == gnom.x and coin.y == gnom.y:
+            return True
+    return False
 
 
+def update_gold_text(font, collected_gold):
+    text = font.render(str(collected_gold), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
 
 
+"""DRAW STUFF"""
 
 
+def draw_scoreboard(screen):
+    pygame.draw.rect(screen, constants.SCOREBOARD_BACKGROUND, (0, constants.GAME_PLAY_HEIGHT + constants.MARGIN * 2,
+                                                               constants.GAME_PLAY_WIDTH + constants.MARGIN * 2,
+                                                               constants.SCOREBOARD_HEIGHT))
 
 
+def draw_margins(screen):
+    # Left line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND, (0, constants.MARGIN,
+                                                           constants.MARGIN, constants.GAME_PLAY_HEIGHT))
+    # Right line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND,
+                     (constants.MARGIN + constants.GAME_PLAY_WIDTH, constants.MARGIN,
+                      constants.MARGIN, constants.GAME_PLAY_HEIGHT))
+    # Top line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND, (0, 0,
+                                                           constants.MARGIN * 2 + constants.GAME_PLAY_WIDTH,
+                                                           constants.MARGIN))
+    # Bottom line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND, (0, constants.MARGIN + constants.GAME_PLAY_HEIGHT,
+                                                           constants.MARGIN * 2 + constants.GAME_PLAY_WIDTH,
+                                                           constants.MARGIN))
 
 
+def draw_grid(screen):
+    # Draws a grid to separate each game cell
+    for i in range(constants.CELL_AMOUNT_X - 1):
+        pygame.draw.rect(screen, constants.GRID_LINE_COLOR, (constants.MARGIN + i * constants.CELL_SIZE +
+                                                             constants.CELL_SIZE - constants.GRID_LINE_WIDTH / 2,
+                                                             constants.MARGIN,
+                                                             constants.GRID_LINE_WIDTH,
+                                                             constants.CELL_SIZE * constants.CELL_AMOUNT_Y))
+
+    for i in range(constants.CELL_AMOUNT_Y - 1):
+        pygame.draw.rect(screen, constants.GRID_LINE_COLOR, (constants.MARGIN,
+                                                             constants.MARGIN + i * constants.CELL_SIZE +
+                                                             constants.CELL_SIZE - constants.GRID_LINE_WIDTH / 2,
+                                                             constants.CELL_SIZE * constants.CELL_AMOUNT_X,
+                                                             constants.GRID_LINE_WIDTH))
 
 
+def draw_gnom(screen, gnom):
+    pygame.draw.circle(screen, constants.GNOM_COLOR,
+                       [int(gnom.x * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN,
+                        int(gnom.y * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN],
+                       int(constants.GNOM_RADIUS))
 
 
+def draw_gold(screen, gnom, vision_size, row, col):
+    pygame.draw.circle(screen, constants.GOLD_COLOR,
+                       [int((gnom.x + col - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        constants.MARGIN,
+                        int((gnom.y + row - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        constants.MARGIN],
+                        int(constants.GOLD_RADIUS))
 
 
+def draw_vision_cell(screen, gnom, vision_size, row, col):
+    pygame.draw.rect(screen, constants.GNOM_VISION_COLOR, ((col + gnom.x - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                                                           (row + gnom.y - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                                                           constants.CELL_SIZE, constants.CELL_SIZE))
 
 
+def draw_vision(screen, gnom, vision):
+    for row in range(len(vision)):
+        for col in range(len(vision[row])):
+            draw_vision_cell(screen, gnom, len(vision[0])//2, row, col)
+            if vision[row][col] == 2:
+                draw_gold(screen, gnom, len(vision[0])//2, row, col)
 
 
+def draw_exit(screen):
+    pygame.draw.rect(screen, constants.EXIT_COLOR, (constants.EXIT_X * constants.CELL_SIZE + constants.MARGIN,
+                                                    constants.EXIT_Y * constants.CELL_SIZE + constants.MARGIN,
+                                                    constants.CELL_SIZE, constants.CELL_SIZE))
 
 
-
-
-
-
+def draw_game(screen, gnom, vision):
+    draw_vision(screen, gnom, vision)
+    draw_margins(screen)
+    draw_scoreboard(screen)
+    draw_grid(screen)
+    draw_exit(screen)
+    draw_gnom(screen, gnom)

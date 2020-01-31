@@ -28,12 +28,15 @@ class Gnom:
 
 
 class Game:
-    def __init__(self, gold_amount=constants.GOLD_AMOUNT):
+    def __init__(self, mode=constants.GAME_MODE, speed=constants.GAME_SPEED, gold_amount=constants.GOLD_AMOUNT):
+        self.__mode = mode
+        self.__action_frequency = constants.FPS / speed
         self.gold_amount = gold_amount
         self.gnom = Gnom(constants.GNOM_X, constants.GNOM_Y)
         self.gold = helpers.initialize_all_gold(gold_amount, constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
         self.state = helpers.make_state(self.gnom, self.gold)
         self.step_counter = 0
+        self.collected_gold = 0
         self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
 
     def get_gold(self):
@@ -44,6 +47,16 @@ class Game:
 
     def get_state(self):
         return self.state
+
+    def get_exit(self):
+        return helpers.find_exit_distance(self.gnom)
+
+    def remove_gold(self, gnom):
+        for index, coin in enumerate(self.gold):
+            if coin.x == gnom.x and coin.y == gnom.y:
+                del self.gold[index]
+                self.collected_gold += 1
+                break
 
     def step(self, direction):
         # Move gnom in the given direction if not next ot the wall
@@ -67,7 +80,75 @@ class Game:
             if self.gnom_vision[self.gnom.vision_size + 1][self.gnom.vision_size] != -1:
                 self.gnom.move(3)
 
+        # Check if gnom has stepped on a gold
+        collect = helpers.check_coin_collect(self.gnom, self.gold)
+        if collect:
+            self.remove_gold(self.gnom)
         # Update state after moving gnom
         self.state = helpers.make_state(self.gnom, self.gold)
         self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
         return self.gnom_vision
+
+    def __initialize_game(self):
+        pygame.init()
+        pygame.display.set_caption("Gnom game by {}".format(self.__mode))
+        size = constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT
+        screen = pygame.display.set_mode(size)
+        font = pygame.font.Font(constants.FONT_NAME, constants.FONT_SIZE)
+
+        # Clock is set to keep track of frames
+        clock = pygame.time.Clock()
+        pygame.display.flip()
+        frame = 1
+        action_taken = False
+        while True:
+            clock.tick(constants.FPS)
+            pygame.event.pump()
+            for event in pygame.event.get():
+                if self.__mode == "player" and not action_taken:
+                    # Look for any button press action
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_LEFT:
+                            action_taken = True
+                            action = 0  # 0 means go left
+                            self.step(action)
+
+                        elif event.key == pygame.K_UP:
+                            action_taken = True
+                            action = 1  # 1 means go up
+                            self.step(action)
+
+                        elif event.key == pygame.K_RIGHT:
+                            action_taken = True
+                            action = 2  # 2 means go right
+                            self.step(action)
+
+                        elif event.key == pygame.K_DOWN:
+                            action_taken = True
+                            action = 3  # 3 means go down
+                            self.step(action)
+
+                # Quit the game if the X symbol is clicked
+                if event.type == pygame.QUIT:
+                    print("pressing escape")
+                    pygame.quit()
+                    raise SystemExit
+
+            action_taken = False
+
+            # Build up a black screen as a game background
+            screen.fill(constants.GAME_BACKGROUND)
+
+            helpers.draw_game(screen, self.gnom, self.gnom_vision)
+
+            text, text_rect = helpers.update_gold_text(font, self.collected_gold)
+            screen.blit(text, text_rect)
+
+            # update display
+            pygame.display.flip()
+            frame += 1
+
+    def play(self):
+        if self.__mode == "ai":
+            print("ai playing")
+        self.__initialize_game()
