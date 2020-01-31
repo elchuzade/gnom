@@ -130,7 +130,7 @@ def add_exit(state):
 
 
 def find_exit_distance(gnom):
-    return (constants.EXIT_Y - gnom.y) + (constants.EXIT_X - gnom.x)
+    return abs(constants.EXIT_Y - gnom.y) + abs(constants.EXIT_X - gnom.x)
 
 
 def check_coin_collect(gnom, gold):

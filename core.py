@@ -31,9 +31,18 @@ class Game:
     def __init__(self, mode=constants.GAME_MODE, speed=constants.GAME_SPEED, gold_amount=constants.GOLD_AMOUNT):
         self.__mode = mode
         self.__action_frequency = constants.FPS / speed
-        self.gold_amount = gold_amount
+        self.__init_gold_amount = self.gold_amount = gold_amount
         self.gnom = Gnom(constants.GNOM_X, constants.GNOM_Y)
         self.gold = helpers.initialize_all_gold(gold_amount, constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
+        self.state = helpers.make_state(self.gnom, self.gold)
+        self.step_counter = 0
+        self.collected_gold = 0
+        self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
+
+    def reset(self):
+        self.gold_amount = self.__init_gold_amount
+        self.gnom = Gnom(constants.GNOM_X, constants.GNOM_Y)
+        self.gold = helpers.initialize_all_gold(self.gold_amount, constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
         self.state = helpers.make_state(self.gnom, self.gold)
         self.step_counter = 0
         self.collected_gold = 0
