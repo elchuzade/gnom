@@ -1,6 +1,18 @@
 import constants
 import helpers
 import pygame
+import random
+import numpy as np
+
+
+class Model:
+    """Creates an example of a deep learning model instance"""
+    def __init__(self):
+        self.placeholder = True
+
+    def predict(self, state):
+        action = random.randrange(4)
+        return action
 
 
 class Gold:
@@ -38,6 +50,9 @@ class Game:
         self.step_counter = 0
         self.collected_gold = 0
         self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
+        # 4 stands for collected_gold value, exit_distance value, gnom_x value and gnom_y value
+        self.state_size = helpers.get_vision_size(self.gnom_vision) + 4
+        self.model = Model()
 
     def reset(self):
         self.gold_amount = self.__init_gold_amount
@@ -47,12 +62,21 @@ class Game:
         self.step_counter = 0
         self.collected_gold = 0
         self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size, self.gnom.x, self.gnom.y)
+        # 4 stands for collected_gold value, exit_distance value, gnom_x value and gnom_y value
+        self.state_size = helpers.get_vision_size(self.gnom_vision) + 4
+        self.model = Model()
 
     def get_gold(self):
         return self.collected_gold
 
     def get_map_gold(self):
         return self.gold
+
+    def get_gnom_vision_flat(self):
+        return helpers.flatten_gnom_vision(self.gnom_vision)
+
+    def get_gnom_vision(self):
+        return self.gnom_vision
 
     def get_gnom(self):
         return self.gnom
@@ -145,6 +169,20 @@ class Game:
                     print("pressing escape")
                     pygame.quit()
                     raise SystemExit
+
+            if self.__mode == "ai":
+                if frame % self.__action_frequency == 0:
+                    self.gnom_vision = helpers.make_gnom_vision(self.state, self.gnom.vision_size,
+                                                                 self.gnom.x, self.gnom.y)
+
+                    gnom_vision_flat = helpers.flatten_gnom_vision(self.gnom_vision)
+
+                    gnom_vision_flat.extend([self.get_gold(), self.get_exit(), self.get_gnom().x, self.get_gnom().y])
+
+                    reshaped_state = np.reshape(gnom_vision_flat, [1, self.state_size])
+                    action = self.model.predict(reshaped_state)
+                    print(action)
+                    self.gnom_vision = self.step(action)
 
             action_taken = False
 

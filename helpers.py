@@ -20,32 +20,38 @@ def add_gnom(empty_state, gnom):
 
 
 def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=constants.CELL_AMOUNT_Y):
-    # Add Gnom coordinates and Exit coordinates to the used x and y to not make coin on top of them
-    used_coords = constants.USED_COORDS
     all_gold = []
+    possible_coords = []
+    for i in range(y_cells):
+        for j in range(x_cells):
+            # Exclude Gnom and Exit coordinates from the possible_coords x and y to not make coin on top of them
+            if (j != constants.GNOM_X or i != constants.GNOM_Y) and (j != constants.EXIT_X or i != constants.EXIT_Y):
+                possible_coords.append({
+                    "x": j,
+                    "y": i
+                })
+
     for i in range(gold_amount):
-        gold_x_coord, gold_y_coord = generate_random_gold_coords(x_cells, y_cells, used_coords)
+        random_index = random.randrange(len(possible_coords))
+        random_coords = possible_coords.pop(random_index)
+        gold_x_coord, gold_y_coord = random_coords["x"], random_coords["y"]
         gold = core.Gold(gold_x_coord, gold_y_coord)
-        used_coords.append({
-            "x": gold_x_coord,
-            "y": gold_y_coord
-        })
         all_gold.append(gold)
 
     return all_gold
 
 
-def generate_random_gold_coords(x_cells, y_cells, used_coords):
-    x_coord = random.randrange(x_cells)
-    y_coord = random.randrange(y_cells)
-
-    for cell in used_coords:
-        if cell["x"] == x_coord and cell["y"] == y_coord:
-            # Overlapping with existing object
-            x_coord, y_coord = generate_random_gold_coords(x_cells, y_cells, used_coords)
-            return x_coord, y_coord
-
-    return x_coord, y_coord
+# def generate_random_gold_coords(x_cells, y_cells, used_coords):
+#     x_coord = random.randrange(x_cells)
+#     y_coord = random.randrange(y_cells)
+#
+#     for cell in used_coords:
+#         if cell["x"] == x_coord and cell["y"] == y_coord:
+#             # Overlapping with existing object
+#             x_coord, y_coord = generate_random_gold_coords(x_cells, y_cells, used_coords)
+#             return x_coord, y_coord
+#
+#     return x_coord, y_coord
 
 
 def add_gold(state_with_gnom, gold):
@@ -127,6 +133,20 @@ def add_exit(state):
     # Place the exit gate to the right side in the middle
     state[len(state) // 2][-1] = 9
     return state
+
+
+def get_vision_size(vision):
+    count = 0
+    for vision_row in vision:
+        count += len(vision_row)
+    return count
+
+
+def flatten_gnom_vision(vision):
+    flat_vision = []
+    for vision_row in vision:
+        flat_vision.extend(vision_row)
+    return flat_vision
 
 
 def find_exit_distance(gnom):

@@ -27,17 +27,6 @@ GNOM_COLOR = (200, 50, 100)
 GNOM_VISION_COLOR = (50, 200, 50)
 GNOM_VISION_SIZE = 2
 
-USED_COORDS = [
-    {
-        "x": GNOM_X,
-        "y": GNOM_Y
-    },
-    {
-        "x": EXIT_X,
-        "y": EXIT_Y
-    }
-]
-
 FPS = 30
 MARGIN = 60
 SPEED = [1, 2, 3, 5, 6, 10, 15, 30]
