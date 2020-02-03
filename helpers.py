@@ -14,8 +14,8 @@ def make_empty_state(x_size, y_size):
     return state
 
 
-def add_gnom(empty_state, gnom):
-    empty_state[gnom.y][gnom.x] = 1
+def add_gnome(empty_state, gnome):
+    empty_state[gnome.y][gnome.x] = 1
     return empty_state
 
 
@@ -24,8 +24,8 @@ def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=co
     possible_coords = []
     for i in range(y_cells):
         for j in range(x_cells):
-            # Exclude Gnom and Exit coordinates from the possible_coords x and y to not make coin on top of them
-            if (j != constants.GNOM_X or i != constants.GNOM_Y) and (j != constants.EXIT_X or i != constants.EXIT_Y):
+            # Exclude Gnome and Exit coordinates from the possible_coords x and y to not make coin on top of them
+            if (j != constants.GNOME_X or i != constants.GNOME_Y) and (j != constants.EXIT_X or i != constants.EXIT_Y):
                 possible_coords.append({
                     "x": j,
                     "y": i
@@ -41,36 +41,29 @@ def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=co
     return all_gold
 
 
-# def generate_random_gold_coords(x_cells, y_cells, used_coords):
-#     x_coord = random.randrange(x_cells)
-#     y_coord = random.randrange(y_cells)
-#
-#     for cell in used_coords:
-#         if cell["x"] == x_coord and cell["y"] == y_coord:
-#             # Overlapping with existing object
-#             x_coord, y_coord = generate_random_gold_coords(x_cells, y_cells, used_coords)
-#             return x_coord, y_coord
-#
-#     return x_coord, y_coord
+def check_if_exit(gnome):
+    if gnome.x == constants.EXIT_X and gnome.y == constants.EXIT_Y:
+        return True
+    return False
 
 
-def add_gold(state_with_gnom, gold):
+def add_gold(state_with_gnome, gold):
     for coin in gold:
-        state_with_gnom[coin.y][coin.x] = 2
-    return state_with_gnom
+        state_with_gnome[coin.y][coin.x] = 2
+    return state_with_gnome
 
 
-def make_state(gnom, gold):
+def make_state(gnome, gold):
     # Building up an empty state to represent a map
     empty_state = make_empty_state(constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
-    # Adding gnom position on the map
-    state_add_gnom = add_gnom(empty_state, gnom)
+    # Adding gnome position on the map
+    state_add_gnome = add_gnome(empty_state, gnome)
     # Add exit gate to the map
-    state_add_exit = add_exit(state_add_gnom)
+    state_add_exit = add_exit(state_add_gnome)
     # Adding all the coins of gold to the map
     state_add_gold = add_gold(state_add_exit, gold)
-    # Adding margin to the map based on the gnom's vision size
-    margin_add_state = add_state_margin(state_add_gold, gnom.vision_size)
+    # Adding margin to the map based on the gnome's vision size
+    margin_add_state = add_state_margin(state_add_gold, gnome.vision_size)
     return margin_add_state
 
 
@@ -110,7 +103,7 @@ def add_state_margin(state, vision_size):
     return margin_state
 
 
-def make_gnom_vision(state, vision_size, x, y):
+def make_gnome_vision(state, vision_size, x, y):
     x_vis = x + vision_size
     y_vis = y + vision_size
 
@@ -142,20 +135,20 @@ def get_vision_size(vision):
     return count
 
 
-def flatten_gnom_vision(vision):
+def flatten_gnome_vision(vision):
     flat_vision = []
     for vision_row in vision:
         flat_vision.extend(vision_row)
     return flat_vision
 
 
-def find_exit_distance(gnom):
-    return abs(constants.EXIT_Y - gnom.y) + abs(constants.EXIT_X - gnom.x)
+def find_exit_distance(gnome):
+    return abs(constants.EXIT_Y - gnome.y) + abs(constants.EXIT_X - gnome.x)
 
 
-def check_coin_collect(gnom, gold):
+def check_coin_collect(gnome, gold):
     for coin in gold:
-        if coin.x == gnom.x and coin.y == gnom.y:
+        if coin.x == gnome.x and coin.y == gnome.y:
             return True
     return False
 
@@ -240,35 +233,35 @@ def draw_grid(screen):
                                                              constants.GRID_LINE_WIDTH))
 
 
-def draw_gnom(screen, gnom):
-    pygame.draw.circle(screen, constants.GNOM_COLOR,
-                       [int(gnom.x * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN,
-                        int(gnom.y * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN],
-                       int(constants.GNOM_RADIUS))
+def draw_gnome(screen, gnome):
+    pygame.draw.circle(screen, constants.GNOME_COLOR,
+                       [int(gnome.x * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN,
+                        int(gnome.y * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN],
+                       int(constants.GNOME_RADIUS))
 
 
-def draw_gold(screen, gnom, vision_size, row, col):
+def draw_gold(screen, gnome, vision_size, row, col):
     pygame.draw.circle(screen, constants.GOLD_COLOR,
-                       [int((gnom.x + col - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                       [int((gnome.x + col - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
                         constants.MARGIN,
-                        int((gnom.y + row - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        int((gnome.y + row - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
                         constants.MARGIN],
                        int(constants.GOLD_RADIUS))
 
 
-def draw_vision_cell(screen, gnom, vision_size, row, col):
-    pygame.draw.rect(screen, constants.GNOM_VISION_COLOR,
-                     ((col + gnom.x - vision_size) * constants.CELL_SIZE + constants.MARGIN,
-                      (row + gnom.y - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+def draw_vision_cell(screen, gnome, vision_size, row, col):
+    pygame.draw.rect(screen, constants.GNOME_VISION_COLOR,
+                     ((col + gnome.x - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                      (row + gnome.y - vision_size) * constants.CELL_SIZE + constants.MARGIN,
                       constants.CELL_SIZE, constants.CELL_SIZE))
 
 
-def draw_vision(screen, gnom, vision):
+def draw_vision(screen, gnome, vision):
     for row in range(len(vision)):
         for col in range(len(vision[row])):
-            draw_vision_cell(screen, gnom, len(vision[0]) // 2, row, col)
+            draw_vision_cell(screen, gnome, len(vision[0]) // 2, row, col)
             if vision[row][col] == 2:
-                draw_gold(screen, gnom, len(vision[0]) // 2, row, col)
+                draw_gold(screen, gnome, len(vision[0]) // 2, row, col)
 
 
 def draw_exit(screen):
@@ -277,10 +270,10 @@ def draw_exit(screen):
                                                     constants.CELL_SIZE, constants.CELL_SIZE))
 
 
-def draw_game(screen, gnom, vision):
-    draw_vision(screen, gnom, vision)
+def draw_game(screen, gnome, vision):
+    draw_vision(screen, gnome, vision)
     draw_margins(screen)
     draw_scoreboard(screen)
     draw_grid(screen)
     draw_exit(screen)
-    draw_gnom(screen, gnom)
+    draw_gnome(screen, gnome)
