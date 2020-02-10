@@ -26,7 +26,7 @@ class Gnome:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.vision_size = constants.GNOM_VISION_SIZE
+        self.vision_size = constants.GNOME_VISION_SIZE
 
     def move(self, direction):
         # Move the gnome in the given direction
@@ -45,7 +45,7 @@ class Game:
         self.__mode = mode
         self.__action_frequency = constants.FPS / speed
         self.__init_gold_amount = self.gold_amount = gold_amount
-        self.gnome = Gnome(constants.GNOM_X, constants.GNOM_Y)
+        self.gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
         self.gold = helpers.initialize_all_gold(gold_amount, constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
         self.state = helpers.make_state(self.gnome, self.gold)
         self.step_counter = 0
@@ -54,10 +54,11 @@ class Game:
         # 4 stands for collected_gold value, exit_distance value, gnome_x value and gnome_y value
         self.state_size = helpers.get_vision_size(self.gnome_vision) + 4
         self.model = Model()
+        self.action_size = 4
 
     def soft_reset(self):
         self.gold_amount = self.__init_gold_amount
-        self.gnome = Gnome(constants.GNOM_X, constants.GNOM_Y)
+        self.gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
         self.gold = helpers.initialize_all_gold(self.gold_amount, constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
         self.state = helpers.make_state(self.gnome, self.gold)
         self.step_counter = 0
@@ -65,10 +66,11 @@ class Game:
         self.gnome_vision = helpers.make_gnome_vision(self.state, self.gnome.vision_size, self.gnome.x, self.gnome.y)
         # 4 stands for collected_gold value, exit_distance value, gnome_x value and gnome_y value
         self.state_size = helpers.get_vision_size(self.gnome_vision) + 4
+        self.action_size = 4
 
     def reset(self):
         self.gold_amount = self.__init_gold_amount
-        self.gnome = Gnome(constants.GNOM_X, constants.GNOM_Y)
+        self.gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
         self.gold = helpers.initialize_all_gold(self.gold_amount, constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
         self.state = helpers.make_state(self.gnome, self.gold)
         self.step_counter = 0
@@ -77,6 +79,7 @@ class Game:
         # 4 stands for collected_gold value, exit_distance value, gnome_x value and gnome_y value
         self.state_size = helpers.get_vision_size(self.gnome_vision) + 4
         self.model = Model()
+        self.action_size = 4
 
     def get_gold(self):
         return self.collected_gold
@@ -92,6 +95,9 @@ class Game:
 
     def get_gnome(self):
         return self.gnome
+
+    def describe(self):
+        return self.state_size, self.action_size
 
     def get_state(self):
         return self.state
