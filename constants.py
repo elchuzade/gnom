@@ -49,35 +49,3 @@ SCREEN_WIDTH = CELL_SIZE * CELL_AMOUNT_X + MARGIN * 2
 SCREEN_HEIGHT = CELL_SIZE * CELL_AMOUNT_Y + MARGIN * 2 + SCOREBOARD_HEIGHT
 GAME_PLAY_HEIGHT = CELL_SIZE * CELL_AMOUNT_Y
 GAME_PLAY_WIDTH = CELL_SIZE * CELL_AMOUNT_X
-
-"""WALL TEMPLATES"""
-wall_1 = [
-    [0, 0, 0],
-    [1, 1, 1],
-    [0, 0, 0]
-]
-wall_2 = [
-    [0, 0, 0],
-    [1, 1, 1],
-    [0, 0, 0],
-]
-wall_3 = [
-    [1, 1, 1],
-    [0, 0, 0],
-    [0, 0, 0],
-]
-wall_4 = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [1, 1, 1],
-]
-wall_5 = [
-    [1, 1, 1],
-    [0, 0, 0],
-    [0, 0, 0],
-]
-wall_6 = [
-    [0, 0, 0],
-    [1, 1, 1],
-    [0, 0, 0],
-]
