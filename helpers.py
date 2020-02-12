@@ -19,6 +19,22 @@ def add_gnome(empty_state, gnome):
     return empty_state
 
 
+def remove_wall_coords(possible_coords):
+    remove_coords = []
+    new_possible_coords = []
+    for cell in constants.WALL_1:
+        remove_coords.append(cell)
+
+    for cell in constants.WALL_2:
+        remove_coords.append(cell)
+
+    for cell in possible_coords:
+        if cell not in remove_coords:
+            new_possible_coords.append(cell)
+
+    return new_possible_coords
+
+
 def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=constants.CELL_AMOUNT_Y):
     all_gold = []
     possible_coords = []
@@ -30,6 +46,8 @@ def initialize_all_gold(gold_amount, x_cells=constants.CELL_AMOUNT_X, y_cells=co
                     "x": j,
                     "y": i
                 })
+
+    possible_coords = remove_wall_coords(possible_coords)
 
     for i in range(gold_amount):
         random_index = random.randrange(len(possible_coords))
@@ -53,6 +71,16 @@ def add_gold(state_with_gnome, gold):
     return state_with_gnome
 
 
+def add_walls(state):
+    for cell in constants.WALL_1:
+        state[cell["y"]][cell["x"]] = -1
+
+    for cell in constants.WALL_2:
+        state[cell["y"]][cell["x"]] = -1
+
+    return state
+
+
 def make_state(gnome, gold):
     # Building up an empty state to represent a map
     empty_state = make_empty_state(constants.CELL_AMOUNT_X, constants.CELL_AMOUNT_Y)
@@ -60,8 +88,10 @@ def make_state(gnome, gold):
     state_add_gnome = add_gnome(empty_state, gnome)
     # Add exit gate to the map
     state_add_exit = add_exit(state_add_gnome)
+    # Add walls
+    state_add_walls = add_walls(state_add_exit)
     # Adding all the coins of gold to the map
-    state_add_gold = add_gold(state_add_exit, gold)
+    state_add_gold = add_gold(state_add_walls, gold)
     # Adding margin to the map based on the gnome's vision size
     margin_add_state = add_state_margin(state_add_gold, gnome.vision_size)
     return margin_add_state

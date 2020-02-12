@@ -49,3 +49,10 @@ SCREEN_WIDTH = CELL_SIZE * CELL_AMOUNT_X + MARGIN * 2
 SCREEN_HEIGHT = CELL_SIZE * CELL_AMOUNT_Y + MARGIN * 2 + SCOREBOARD_HEIGHT
 GAME_PLAY_HEIGHT = CELL_SIZE * CELL_AMOUNT_Y
 GAME_PLAY_WIDTH = CELL_SIZE * CELL_AMOUNT_X
+
+"""WALLS"""
+WALL_1 = [{"x": 4, "y": 4}, {"x": 5, "y": 4}, {"x": 6, "y": 4}, {"x": 6, "y": 5}, {"x": 6, "y": 6}, {"x": 6, "y": 7}, {"x": 6, "y": 8},
+          {"x": 5, "y": 8}, {"x": 4, "y": 8}]
+
+WALL_2 = [{"x": 20, "y": 4}, {"x": 21, "y": 4}, {"x": 22, "y": 4}, {"x": 22, "y": 5}, {"x": 22, "y": 6}, {"x": 22, "y": 7}, {"x": 22, "y": 8},
+          {"x": 21, "y": 8}, {"x": 20, "y": 8}]

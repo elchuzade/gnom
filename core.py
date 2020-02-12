@@ -81,6 +81,10 @@ class Game:
         self.model = Model()
         self.action_size = 4
 
+    def print_state(self):
+        for row in self.state:
+            print(row)
+
     def get_gold(self):
         return self.collected_gold
 
